@@ -39,23 +39,23 @@ class AGREE(nn.Module):
 
     # group forward
     def grp_forward(self, group_inputs, item_inputs):
-        group_embeds = Variable(torch.Tensor().cuda("cuda:0"))
-        item_embeds_full = self.itemembeds(Variable(torch.LongTensor(item_inputs)).cuda("cuda:0"))
+        group_embeds = Variable(torch.Tensor())
+        item_embeds_full = self.itemembeds(Variable(torch.LongTensor(item_inputs)))
         for i, j in zip(group_inputs, item_inputs):
             try:
                 members = self.group_member_dict[i]
             except KeyError as e:
                 # print("KeyError: ", i, e)
                 members = [0]
-            members_embeds = self.userembeds(Variable(torch.LongTensor(members)).cuda("cuda:0"))
+            members_embeds = self.userembeds(Variable(torch.LongTensor(members)))
             items_numb = []
             for _ in members:
                 items_numb.append(j)
-            item_embeds = self.itemembeds(Variable(torch.LongTensor(items_numb)).cuda("cuda:0"))
+            item_embeds = self.itemembeds(Variable(torch.LongTensor(items_numb)))
             group_item_embeds = torch.cat((members_embeds, item_embeds), dim=1)
             at_wt = self.attention(group_item_embeds)
             g_embeds_with_attention = torch.matmul(at_wt, members_embeds)
-            group_embeds_pure = self.groupembeds(Variable(torch.LongTensor([i])).cuda("cuda:0"))
+            group_embeds_pure = self.groupembeds(Variable(torch.LongTensor([i])))
             g_embeds = g_embeds_with_attention + group_embeds_pure
             if group_embeds.dim() == 0:
                 group_embeds = g_embeds
@@ -69,7 +69,7 @@ class AGREE(nn.Module):
 
     # user forward
     def usr_forward(self, user_inputs, item_inputs):
-        user_inputs_var, item_inputs_var = Variable(user_inputs.cuda("cuda:0")), Variable(item_inputs.cuda("cuda:0"))
+        user_inputs_var, item_inputs_var = Variable(user_inputs.cuda("cuda:0")), Variable(item_inputs)
         user_embeds = self.userembeds(user_inputs_var)
         item_embeds = self.itemembeds(item_inputs_var)
         element_embeds = torch.mul(user_embeds, item_embeds)  # Element-wise product
