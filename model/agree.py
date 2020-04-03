@@ -69,7 +69,7 @@ class AGREE(nn.Module):
 
     # user forward
     def usr_forward(self, user_inputs, item_inputs):
-        user_inputs_var, item_inputs_var = Variable(user_inputs.cuda("cuda:0")), Variable(item_inputs)
+        user_inputs_var, item_inputs_var = Variable(user_inputs), Variable(item_inputs)
         user_embeds = self.userembeds(user_inputs_var)
         item_embeds = self.itemembeds(item_inputs_var)
         element_embeds = torch.mul(user_embeds, item_embeds)  # Element-wise product
